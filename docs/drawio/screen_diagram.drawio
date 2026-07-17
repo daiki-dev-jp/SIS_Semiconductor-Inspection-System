@@ -1,0 +1,84 @@
+<mxfile host="Electron">
+  <diagram name="ページ-1" id="c3iVFFKf6MhwZP1piTXE">
+    <mxGraphModel dx="1123" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-25" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;Qtアプリ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="20" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-26" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;Djangoアプリ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="170" x="20" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-29" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;ログイン画面&lt;/font&gt;" vertex="1">
+          <mxGeometry height="65" width="120" x="282" y="346" as="geometry" />
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-30" edge="1" parent="1" source="labCXL9XVFc1-Do8qJ2l-29" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="labCXL9XVFc1-Do8qJ2l-31" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="350" y="436" as="sourcePoint" />
+            <mxPoint x="340" y="456" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-34" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;startArrow=none;startFill=0;curved=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" target="labCXL9XVFc1-Do8qJ2l-42">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="342" y="806" />
+              <mxPoint x="461" y="806" />
+            </Array>
+            <mxPoint x="342" y="536" as="sourcePoint" />
+            <mxPoint x="461" y="808.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-31" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;メインページ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="65" width="120" x="282" y="471" as="geometry" />
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-32" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;認証成功&lt;/span&gt;" vertex="1">
+          <mxGeometry height="50" width="120" x="350" y="416" as="geometry" />
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-35" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="342" y="566" as="sourcePoint" />
+            <mxPoint x="462" y="566" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-36" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;CSV一覧&lt;/font&gt;" vertex="1">
+          <mxGeometry height="65" width="120" x="460" y="536" as="geometry" />
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-37" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="342" y="646" as="sourcePoint" />
+            <mxPoint x="462" y="646" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-38" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;詳細表示&lt;/font&gt;" vertex="1">
+          <mxGeometry height="65" width="120" x="460" y="616" as="geometry" />
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-39" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="343" y="726" as="sourcePoint" />
+            <mxPoint x="463" y="726" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-40" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;グラフ表示&lt;/font&gt;" vertex="1">
+          <mxGeometry height="65" width="120" x="461" y="696" as="geometry" />
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-42" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;ログアウト&lt;/font&gt;" vertex="1">
+          <mxGeometry height="65" width="120" x="461" y="776" as="geometry" />
+        </mxCell>
+        <mxCell id="labCXL9XVFc1-Do8qJ2l-43" edge="1" parent="1" source="labCXL9XVFc1-Do8qJ2l-42" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="labCXL9XVFc1-Do8qJ2l-29" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="690" y="809" />
+              <mxPoint x="690" y="379" />
+            </Array>
+            <mxPoint x="690" y="786" as="sourcePoint" />
+            <mxPoint x="740" y="736" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MHGPGtZmxCRA5AtqjkO9-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;メイン画面&lt;/font&gt;" vertex="1">
+          <mxGeometry height="65" width="120" x="282" y="100" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
