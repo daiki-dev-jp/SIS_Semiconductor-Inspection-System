@@ -1,4 +1,4 @@
-# SIS (Semiconductor Inspection System)
+﻿# SIS (Semiconductor Inspection System)
 
 ## 概要
 
@@ -30,13 +30,13 @@ CSV を出力します。
 
 ## 画面スクリーンショット
 
-・メイン画面
+### メイン画面
 ![システム構成](docs/images/MainWindow.png)
 
-・レシピ画面(追加時)
+### レシピ画面(追加時)
 ![システム構成](docs/images/RecipeDialog_add.png)
 
-・レシピ画面(編集時)
+### レシピ画面(編集時)
 ![システム構成](docs/images/RecipeDialog_update.png)
 
 ---
