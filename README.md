@@ -33,8 +33,10 @@ CSV を出力します。
 ・メイン画面
 ![システム構成](docs/images/MainWindow.png)
 
-・レシピ画面
+・レシピ画面(追加時)
 ![システム構成](docs/images/RecipeDialog_add.png)
+
+・レシピ画面(編集時)
 ![システム構成](docs/images/RecipeDialog_update.png)
 
 ---
