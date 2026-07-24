@@ -38,6 +38,9 @@ qt_add_executable(${PROJECT_NAME}
     src/repository/RecipeRepository.cpp
     src/repository/RecipeRepository.h
 
+    src/core/State.h
+    src/core/StateMachine.h
+    src/core/StateMachine.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
