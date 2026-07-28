@@ -1,5 +1,9 @@
 ﻿#include "core/StateMachine.h"
 
+//=============================================================================
+// Public Methods
+//=============================================================================
+
 State StateMachine::currentState() const {
 	return m_currentState;
 }

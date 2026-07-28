@@ -9,17 +9,22 @@
 
 ### デスクトップアプリ
 
-| クラス           | 役割                                   |
-| ---------------- | -------------------------------------- |
-| MainWindow       | メイン画面の表示、ユーザー操作の受付   |
-| DeviceController | 画面と測定シミュレーション処理を仲介   |
-| DeviceSimulator  | 測定シミュレーションの実行             |
-| RecipeDialog     | レシピ画面の表示、ユーザー操作の受付   |
-| RecipeRepository | レシピデータの保存・更新・削除・読込   |
-| Recipe           | レシピ情報を保持するモデル             |
-| CsvWriter        | 測定結果の CSV 出力                    |
-| Logger           | ログの記録                             |
-| StatusLamp       | 装置状態を表示するカスタムウィジェット |
+| クラス               | 役割                                              |
+| -------------------- | ------------------------------------------------- |
+| MainWindow           | メイン画面の表示、ユーザー操作の受付              |
+| MeasurementInfo      | メイン画面情報を保持するモデル                    |
+| MeasurementResult    | 測定結果を保持するモデル                          |
+| MeasurementValidator | 測定開始前の入力内容を検証する                    |
+| State                | 装置状態を表す列挙型                              |
+| StateMachine         | 現在の装置状態を保持・更新する                    |
+| PlcController        | PLC との通信模擬                                  |
+| RecipeDialog         | レシピ画面の表示、ユーザー操作の受付              |
+| RecipeRepository     | レシピデータの保存・更新・削除・読込              |
+| Recipe               | レシピ情報を保持するモデル                        |
+| CsvWriter            | 測定結果の CSV 出力                               |
+| CsvRecord            | CSV 出力用の 1 レコード分のデータを保持するモデル |
+| Logger               | アプリケーションログを記録する                    |
+| StatusLamp           | 装置状態を表示するカスタムウィジェット            |
 
 ### web アプリ
 
@@ -33,34 +38,45 @@
 
 ## クラス図
 
-### デスクトップアプリ
-
 ```mermaid
 classDiagram
 
 class MainWindow
-class DeviceController
-class DeviceSimulator
+class MeasurementInfo
+class MeasurementResult
+class MeasurementValidator
+class State
+class StateMachine
+class PlcController
 class RecipeDialog
 class RecipeRepository
 class Recipe
 class CsvWriter
+class CsvRecord
 class Logger
 class StatusLamp
 
-MainWindow --> DeviceController
+MainWindow --> MeasurementInfo
+MainWindow --> MeasurementValidator
+MainWindow --> StateMachine
+MainWindow --> PlcController
 MainWindow --> RecipeDialog
 MainWindow --> StatusLamp
 
-DeviceController --> DeviceSimulator
-DeviceController --> CsvWriter
+PlcController --> MeasurementResult
+
+CsvWriter --> CsvRecord
+CsvWriter --> MeasurementResult
 
 RecipeDialog --> RecipeRepository
 RecipeRepository --> Recipe
 
+StateMachine --> State
+
 MainWindow ..> Logger
-DeviceController ..> Logger
-DeviceSimulator ..> Logger
+PlcController ..> Logger
+RecipeRepository ..> Logger
+CsvWriter ..> Logger
 ```
 
 ### web アプリ

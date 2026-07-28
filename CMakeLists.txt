@@ -18,29 +18,36 @@ qt_standard_project_setup()
 
 qt_add_executable(${PROJECT_NAME}
 
-    src/Main.cpp
-
-    src/ui/MainWindow.cpp
-    src/ui/MainWindow.h
-    src/ui/MainWindow.ui
-
-    src/ui/RecipeDialog.cpp
-    src/ui/RecipeDialog.h
-    src/ui/RecipeDialog.ui
-
-
-    src/widgets/StatusLamp.cpp
-    src/widgets/StatusLamp.h
-
-    src/model/Recipe.cpp
-    src/model/Recipe.h
-
-    src/repository/RecipeRepository.cpp
-    src/repository/RecipeRepository.h
+    src/controller/PlcController.h
+    src/controller/PlcController.cpp
 
     src/core/State.h
     src/core/StateMachine.h
     src/core/StateMachine.cpp
+
+    src/model/CsvRecord.h
+    src/model/MeasurementInfo.h
+    src/model/Recipe.cpp
+    src/model/Recipe.h
+    src/model/MeasurementResult.h
+
+    src/repository/RecipeRepository.cpp
+    src/repository/RecipeRepository.h
+
+    src/ui/MainWindow.cpp
+    src/ui/MainWindow.h
+    src/ui/MainWindow.ui
+    src/ui/RecipeDialog.cpp
+    src/ui/RecipeDialog.h
+    src/ui/RecipeDialog.ui
+
+    src/validator/MeasurementValidator.h
+    src/validator/MeasurementValidator.cpp
+
+    src/widgets/StatusLamp.cpp
+    src/widgets/StatusLamp.h
+
+    src/Main.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

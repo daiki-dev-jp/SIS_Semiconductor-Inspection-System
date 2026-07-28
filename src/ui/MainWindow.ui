@@ -295,6 +295,9 @@
         <property name="text">
          <string/>
         </property>
+        <property name="maxLength">
+         <number>13</number>
+        </property>
        </widget>
       </item>
       <item row="4" column="2">
@@ -334,22 +337,15 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLineEdit" name="operatorLineEdit">
+       <widget class="QLineEdit" name="operatorNameLineEdit">
         <property name="font">
          <font/>
         </property>
         <property name="text">
          <string/>
         </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="equipmentNoLineEdit">
-        <property name="font">
-         <font/>
-        </property>
-        <property name="text">
-         <string/>
+        <property name="maxLength">
+         <number>10</number>
         </property>
        </widget>
       </item>
@@ -416,6 +412,9 @@
         <property name="text">
          <string/>
         </property>
+        <property name="maxLength">
+         <number>13</number>
+        </property>
        </widget>
       </item>
       <item row="5" column="1" colspan="3">
@@ -440,6 +439,28 @@
         <property name="text">
          <string>レシピ情報：</string>
         </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="equipmentNoComboBox">
+        <property name="font">
+         <font/>
+        </property>
+        <item>
+         <property name="text">
+          <string>EQ-0001</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>EQ-0002</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TW-0001</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>

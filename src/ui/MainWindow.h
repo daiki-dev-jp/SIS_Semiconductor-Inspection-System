@@ -3,6 +3,9 @@
 #include <QtWidgets/QMainWindow>
 
 #include "model/Recipe.h"
+#include "model/MeasurementInfo.h"
+#include "core/StateMachine.h"
+#include "controller/PlcController.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -36,6 +39,9 @@ private:
     void loadRecipes();
     void selectRecipe(const QString& recipeId);
     void updateRecipeInfo();
+    MeasurementInfo createMeasurementInfoFromUi() const;
+    StateMachine m_stateMachine;
+    PlcController m_plcController;
 
 private:
     Ui::MainWindowClass*ui;
