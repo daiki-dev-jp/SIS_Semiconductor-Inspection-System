@@ -21,11 +21,12 @@ qt_add_executable(${PROJECT_NAME}
     src/controller/PlcController.h
     src/controller/PlcController.cpp
 
+    src/core/ErrorType.h
     src/core/State.h
     src/core/StateMachine.h
     src/core/StateMachine.cpp
 
-    src/model/CsvRecord.h
+    src/model/MeasurementRecord.h
     src/model/MeasurementInfo.h
     src/model/Recipe.cpp
     src/model/Recipe.h
@@ -70,3 +71,5 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin
 )
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

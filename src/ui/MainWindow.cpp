@@ -8,7 +8,7 @@
 #include "core/State.h"
 #include "core/StateMachine.h"
 #include "model/MeasurementResult.h"
-#include "model/CsvRecord.h"
+#include "model/MeasurementRecord.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -36,6 +36,18 @@ void MainWindow::initializeUi()
 {
     // 初期表示設定
     ui->sendInfoPushButton->setEnabled(true);
+    ui->resultTableWidget->setFocusPolicy(Qt::NoFocus);
+    ui->errorPlainTextEdit->setFocusPolicy(Qt::NoFocus);
+
+    ui->resultTableWidget->setColumnWidth(0, 120); // 測定位置
+    ui->resultTableWidget->setColumnWidth(1, 120); // 平均膜厚
+    ui->resultTableWidget->setColumnWidth(2, 80);  // 判定
+    ui->resultTableWidget->setAlternatingRowColors(true);
+    ui->resultTableWidget->setStyleSheet(
+        "QTableWidget {"
+        "    alternate-background-color: rgb(240,240,240);"
+        "    background-color: white;"
+        "}");
 
     loadRecipes();
 
@@ -87,6 +99,7 @@ void MainWindow::initializeState()
 {
     // 初期状態
     m_stateMachine.setState(State::IDLE);
+    updateUiByState();
 }
 
 //=============================================================================
@@ -116,113 +129,39 @@ void MainWindow::onSendInfoClicked() {
 
     // 情報送信
     m_stateMachine.setState(State::READY);
+    updateUiByState();
 }
 
 void MainWindow::onStartMeasurementClicked() {
     // 測定開始
     m_stateMachine.setState(State::START);
-
-    //--------------------------------------------------------
-    // メイン画面・レシピから取得
-    //--------------------------------------------------------
+    updateUiByState();
 
     MeasurementInfo info = createMeasurementInfoFromUi();
 
     Recipe recipe = m_recipes[ui->recipeComboBox->currentIndex()];
 
-    int lineCount = recipe.lineCount;
+    QVector<MeasurementResult> results =
+        receiveMeasurementResults(recipe.lineCount);
 
-    //--------------------------------------------------------
-    // PLCから測定結果取得
-    //--------------------------------------------------------
-
-    QVector<MeasurementResult> results;
-
-    for (int lineNo = 1; lineNo <= lineCount; ++lineNo)
-    {
-        results.append(
-            m_plcController.receiveMeasurementResult());
+    if (checkError()) {
+        return;
     }
 
-    //--------------------------------------------------------
-    // PC側で測定完了時刻取得
-    //--------------------------------------------------------
+    double totalAverage = calculateTotalAverage(results);
 
-    QDateTime measurementTime =
-        QDateTime::currentDateTime();
+    // TODO://CSV出力でも利用
+    QVector<MeasurementRecord> records 
+        = createMeasurementRecords(
+            info,
+            recipe,
+            results,
+            QDateTime::currentDateTime(),
+            totalAverage
+            );
 
-    //--------------------------------------------------------
-    // 全体平均膜厚計算
-    //--------------------------------------------------------
+    updateResultTable(records);
 
-    double totalAverage = 0.0;
-
-    for (const auto& result : results)
-    {
-        totalAverage += result.averageThickness;
-    }
-
-    totalAverage /= results.size();
-
-    // TODO://CSV出力で利用
-    //--------------------------------------------------------
-    // CSVデータ生成
-    //--------------------------------------------------------
-
-    QVector<CsvRecord> records;
-
-    int step = 200 / (lineCount - 1);
-
-    for (int i = 0; i < results.size(); ++i)
-    {
-        CsvRecord record;
-
-        record.measurementTime = measurementTime;
-
-        record.deviceName = info.equipmentNo;
-        record.waferId = info.waferId;
-        record.lotNo = info.lotNo;
-        record.recipeName = recipe.recipeName;
-        record.partNumber = recipe.partNumber;
-        record.waferType = recipe.waferType;
-        record.operatorName = info.operatorName;
-
-        record.measurementLineCount = lineCount;
-
-        //---------------------------------------
-        // PC側で計算
-        //---------------------------------------
-
-        record.lineNumber = i + 1;
-
-        record.linePosition = i * step;
-
-        record.averageThickness =
-            results[i].averageThickness;
-
-        record.totalAverageThickness =
-            totalAverage;
-
-        record.upperLimit = recipe.upperLimit;
-
-        record.lowerLimit = recipe.lowerLimit;
-
-        //---------------------------------------
-        // 判定
-        //---------------------------------------
-
-        if (record.averageThickness >= record.lowerLimit &&
-            record.averageThickness <= record.upperLimit)
-        {
-            record.judgment = "OK";
-        }
-        else
-        {
-            record.judgment = "NG";
-        }
-
-        records.append(record);
-    }
 
     //--------------------------------------------------------
     // CSV保存
@@ -231,12 +170,19 @@ void MainWindow::onStartMeasurementClicked() {
      //CsvWriter writer;
      //writer.write(records);
 
+    if (checkError()) {
+        return;
+    }
+
     m_stateMachine.setState(State::COMPLETE);
+    updateUiByState();
 }
 
 void MainWindow::onResetClicked() {
     // リセット
+    clearMeasurementResult();
     m_stateMachine.setState(State::IDLE);
+    updateUiByState();
 }
 
 void MainWindow::onAddRecipeClicked() {
@@ -322,6 +268,52 @@ void MainWindow::updateRecipeInfo() {
         m_recipes[index].partNumber + " / " + m_recipes[index].waferType);
 }
 
+void MainWindow::updateUiByState()
+{
+    switch (m_stateMachine.currentState())
+    {
+    case State::IDLE:
+
+        ui->sendInfoPushButton->setEnabled(true);
+        ui->startMeasurementPushButton->setEnabled(false);
+        ui->resetPushButton->setEnabled(false);
+
+        break;
+
+    case State::READY:
+
+        ui->sendInfoPushButton->setEnabled(false);
+        ui->startMeasurementPushButton->setEnabled(true);
+        ui->resetPushButton->setEnabled(false);
+
+        break;
+
+    case State::START:
+
+        ui->sendInfoPushButton->setEnabled(false);
+        ui->startMeasurementPushButton->setEnabled(false);
+        ui->resetPushButton->setEnabled(false);
+
+        break;
+
+    case State::COMPLETE:
+    case State::ERROR:
+
+        ui->sendInfoPushButton->setEnabled(false);
+        ui->startMeasurementPushButton->setEnabled(false);
+        ui->resetPushButton->setEnabled(true);
+
+        break;
+    }
+}
+
+void MainWindow::clearMeasurementResult() {
+    ui->resultTableWidget->clearContents();
+    ui->resultTableWidget->setRowCount(0);
+
+    ui->errorPlainTextEdit->clear();
+}
+
 MeasurementInfo MainWindow::createMeasurementInfoFromUi() const {
     MeasurementInfo info;
 
@@ -334,3 +326,156 @@ MeasurementInfo MainWindow::createMeasurementInfoFromUi() const {
     return info;
 }
 
+// PLCから測定結果取得
+QVector<MeasurementResult> MainWindow::receiveMeasurementResults(int lineCount) {
+    QVector<MeasurementResult> results;
+
+    for (int lineNo = 0; lineNo < lineCount; ++lineNo)
+    {
+        results.append(
+            m_plcController.receiveMeasurementResult());
+    }
+
+    return results;
+}
+
+// 全体平均膜厚計算
+double MainWindow::calculateTotalAverage(const QVector<MeasurementResult>& results) {
+    double total = 0.0;
+
+    for (const auto& result : results)
+    {
+        total += result.averageThickness;
+    }
+
+    return total /= results.size();   
+}
+
+// データ生成
+QVector<MeasurementRecord> MainWindow::createMeasurementRecords(
+    const MeasurementInfo& info,
+    const Recipe& recipe,
+    const QVector<MeasurementResult>& results,
+    const QDateTime& measurementTime,
+    const double& totalAverage
+) {
+    QVector<MeasurementRecord> records;
+    int step = 200 / (recipe.lineCount - 1);//0割はない
+
+    for (int i = 0; i < results.size(); ++i)
+    {
+        MeasurementRecord record;
+
+        record.measurementTime = measurementTime;
+
+        record.deviceName = info.equipmentNo;
+        record.waferId = info.waferId;
+        record.lotNo = info.lotNo;
+        record.recipeName = recipe.recipeName;
+        record.partNumber = recipe.partNumber;
+        record.waferType = recipe.waferType;
+        record.operatorName = info.operatorName;
+
+        record.measurementLineCount = recipe.lineCount;
+
+        //---------------------------------------
+        // PC側で計算
+        //---------------------------------------
+
+        record.lineNumber = i + 1;
+
+        record.linePosition = i * step;
+
+        record.averageThickness =
+            results[i].averageThickness;
+
+        record.totalAverageThickness =
+            totalAverage;
+
+        record.upperLimit = recipe.upperLimit;
+
+        record.lowerLimit = recipe.lowerLimit;
+
+        //---------------------------------------
+        // 判定
+        //---------------------------------------
+
+        if (record.averageThickness >= record.lowerLimit &&
+            record.averageThickness <= record.upperLimit)
+        {
+            record.judgment = "OK";
+        }
+        else
+        {
+            record.judgment = "NG";
+        }
+
+        records.append(record);
+    }
+    return records;
+}
+
+
+// 測定結果表示
+void MainWindow::updateResultTable(const QVector<MeasurementRecord>& records) {
+    ui->resultTableWidget->clearContents();
+    ui->resultTableWidget->setRowCount(records.size());
+
+    for (int row = 0; row < records.size(); ++row)
+    {
+        const MeasurementRecord& record = records[row];
+
+        // ===== 測定位置 =====
+        auto* lineItem = new QTableWidgetItem(
+            QString::number(record.linePosition));
+        lineItem->setTextAlignment(Qt::AlignVCenter | Qt::AlignRight);
+
+        // ===== 平均膜厚 =====
+        auto* thicknessItem = new QTableWidgetItem(
+            QString::number(record.averageThickness, 'f', 2));
+        thicknessItem->setTextAlignment(Qt::AlignVCenter | Qt::AlignRight);
+
+        // ===== 判定 =====
+        auto* judgmentItem = new QTableWidgetItem(record.judgment);
+        judgmentItem->setTextAlignment(Qt::AlignCenter);
+        if (record.judgment == "OK")
+        {
+            judgmentItem->setForeground(QBrush(Qt::darkGreen));
+        }
+        else if (record.judgment == "NG")
+        {
+            judgmentItem->setForeground(QBrush(Qt::red));
+        }
+
+        ui->resultTableWidget->setItem(row, 0, lineItem);
+        ui->resultTableWidget->setItem(row, 1, thicknessItem);
+        ui->resultTableWidget->setItem(row, 2, judgmentItem);
+    }
+}
+
+//エラーチェック
+bool MainWindow::checkError()
+{
+    if (m_errorType == ErrorType::None)
+        return false;
+
+    switch (m_errorType)
+    {
+    case ErrorType::PlcError:
+        ui->errorPlainTextEdit->setPlainText("PLC通信エラー");
+        break;
+
+    case ErrorType::CsvError:
+        ui->errorPlainTextEdit->setPlainText("CSV保存エラー");
+        break;
+
+    case ErrorType::MeasurementError:
+        ui->errorPlainTextEdit->setPlainText("測定エラー");
+        break;
+    }
+
+    m_stateMachine.setState(State::ERROR);
+    updateUiByState();
+
+    return true;
+}

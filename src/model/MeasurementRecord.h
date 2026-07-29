@@ -2,7 +2,7 @@
 #include <QDateTime>
 #include <QString>
 
-struct CsvRecord {
+struct MeasurementRecord {
     QDateTime measurementTime;
 
     QString deviceName;

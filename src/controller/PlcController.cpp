@@ -18,9 +18,9 @@ bool PlcController::sendMeasurementInfo(const MeasurementInfo& info) {
 MeasurementResult PlcController::receiveMeasurementResult() {
     MeasurementResult result;
 
-    //ランダム測定値(99.30～100.70μm)
-    double min = 99.3;
-    double max = 100.7;
+    //ランダム測定値(700.00～760.00μm)
+    double min = 700.0;
+    double max = 760.0;
 
     result.averageThickness =
         min + QRandomGenerator::global()->generateDouble()

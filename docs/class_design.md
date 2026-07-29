@@ -1,4 +1,4 @@
-#　クラス概要
+﻿#　クラス概要
 
 ## 説明
 
@@ -9,22 +9,22 @@
 
 ### デスクトップアプリ
 
-| クラス               | 役割                                              |
-| -------------------- | ------------------------------------------------- |
-| MainWindow           | メイン画面の表示、ユーザー操作の受付              |
-| MeasurementInfo      | メイン画面情報を保持するモデル                    |
-| MeasurementResult    | 測定結果を保持するモデル                          |
-| MeasurementValidator | 測定開始前の入力内容を検証する                    |
-| State                | 装置状態を表す列挙型                              |
-| StateMachine         | 現在の装置状態を保持・更新する                    |
-| PlcController        | PLC との通信模擬                                  |
-| RecipeDialog         | レシピ画面の表示、ユーザー操作の受付              |
-| RecipeRepository     | レシピデータの保存・更新・削除・読込              |
-| Recipe               | レシピ情報を保持するモデル                        |
-| CsvWriter            | 測定結果の CSV 出力                               |
-| CsvRecord            | CSV 出力用の 1 レコード分のデータを保持するモデル |
-| Logger               | アプリケーションログを記録する                    |
-| StatusLamp           | 装置状態を表示するカスタムウィジェット            |
+| クラス               | 役割                                                         |
+| -------------------- | ------------------------------------------------------------ |
+| MainWindow           | メイン画面の表示、ユーザー操作の受付                         |
+| MeasurementInfo      | メイン画面情報を保持するモデル                               |
+| MeasurementResult    | 測定結果を保持するモデル                                     |
+| MeasurementValidator | 測定開始前の入力内容を検証する                               |
+| State                | 装置状態を表す列挙型                                         |
+| StateMachine         | 現在の装置状態を保持・更新する                               |
+| PlcController        | PLC との通信を模擬し、測定開始・完了などのイベントを通知する |
+| RecipeDialog         | レシピ画面の表示、ユーザー操作の受付                         |
+| RecipeRepository     | レシピデータの保存・更新・削除・読込                         |
+| Recipe               | レシピ情報を保持するモデル                                   |
+| CsvWriter            | 測定結果の CSV 出力                                          |
+| MeasurementRecord    | 1 レコード分のデータを保持するモデル                         |
+| Logger               | アプリケーションログを記録する                               |
+| StatusLamp           | 装置状態を表示するカスタムウィジェット                       |
 
 ### web アプリ
 
@@ -52,7 +52,7 @@ class RecipeDialog
 class RecipeRepository
 class Recipe
 class CsvWriter
-class CsvRecord
+class MeasurementRecord
 class Logger
 class StatusLamp
 
@@ -65,7 +65,7 @@ MainWindow --> StatusLamp
 
 PlcController --> MeasurementResult
 
-CsvWriter --> CsvRecord
+CsvWriter --> MeasurementRecord
 CsvWriter --> MeasurementResult
 
 RecipeDialog --> RecipeRepository

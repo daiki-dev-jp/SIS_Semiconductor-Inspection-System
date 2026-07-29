@@ -4,6 +4,8 @@
 
 #include "model/Recipe.h"
 #include "model/MeasurementInfo.h"
+#include "model/MeasurementRecord.h"
+#include "core/ErrorType.h"
 #include "core/StateMachine.h"
 #include "controller/PlcController.h"
 
@@ -39,9 +41,25 @@ private:
     void loadRecipes();
     void selectRecipe(const QString& recipeId);
     void updateRecipeInfo();
+    void updateUiByState();
+    void clearMeasurementResult();
     MeasurementInfo createMeasurementInfoFromUi() const;
     StateMachine m_stateMachine;
     PlcController m_plcController;
+
+    QVector<MeasurementResult> receiveMeasurementResults(int lineCount);
+    double calculateTotalAverage(const QVector<MeasurementResult>& results);
+    QVector<MeasurementRecord> createMeasurementRecords(
+            const MeasurementInfo& info,
+            const Recipe& recipe,
+            const QVector<MeasurementResult>& results,
+            const QDateTime& measurementTime,
+            const double& totalAverage
+        );
+
+    void updateResultTable(const QVector<MeasurementRecord>& records);
+    ErrorType m_errorType = ErrorType::None;
+    bool checkError();
 
 private:
     Ui::MainWindowClass*ui;

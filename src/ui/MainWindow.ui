@@ -78,9 +78,9 @@
    <widget class="QGroupBox" name="errorGroupBox">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>380</x>
       <y>370</y>
-      <width>431</width>
+      <width>411</width>
       <height>231</height>
      </rect>
     </property>
@@ -97,7 +97,7 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>411</width>
+       <width>394</width>
        <height>191</height>
       </rect>
      </property>
@@ -108,7 +108,7 @@
      <rect>
       <x>10</x>
       <y>370</y>
-      <width>331</width>
+      <width>361</width>
       <height>281</height>
      </rect>
     </property>
@@ -125,7 +125,7 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>311</width>
+       <width>341</width>
        <height>241</height>
       </rect>
      </property>
@@ -478,6 +478,20 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>waferIdLineEdit</tabstop>
+  <tabstop>lotNoLineEdit</tabstop>
+  <tabstop>operatorNameLineEdit</tabstop>
+  <tabstop>equipmentNoComboBox</tabstop>
+  <tabstop>recipeComboBox</tabstop>
+  <tabstop>addRecipeButton</tabstop>
+  <tabstop>editRecipeButton</tabstop>
+  <tabstop>sendInfoPushButton</tabstop>
+  <tabstop>startMeasurementPushButton</tabstop>
+  <tabstop>resetPushButton</tabstop>
+  <tabstop>resultTableWidget</tabstop>
+  <tabstop>errorPlainTextEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
