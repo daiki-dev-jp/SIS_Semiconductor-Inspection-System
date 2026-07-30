@@ -53,7 +53,7 @@ private:
             const MeasurementInfo& info,
             const Recipe& recipe,
             const QVector<MeasurementResult>& results,
-            const QDateTime& measurementTime,
+            const QDateTime& dateTime,
             const double& totalAverage
         );
 

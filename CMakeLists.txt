@@ -32,6 +32,8 @@ qt_add_executable(${PROJECT_NAME}
     src/model/Recipe.h
     src/model/MeasurementResult.h
 
+    src/repository/CsvWriter.h
+    src/repository/CsvWriter.cpp
     src/repository/RecipeRepository.cpp
     src/repository/RecipeRepository.h
 

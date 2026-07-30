@@ -3,7 +3,7 @@
 #include <QString>
 
 struct MeasurementRecord {
-    QDateTime measurementTime;
+    QDateTime dateTime;
 
     QString deviceName;
     QString waferId;

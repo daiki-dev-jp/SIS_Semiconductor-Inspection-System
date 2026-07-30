@@ -3,6 +3,7 @@
 #include "ui/MainWindow.h"
 #include "ui_MainWindow.h"
 #include "ui/RecipeDialog.h"
+#include "repository/CsvWriter.h"
 #include "repository/RecipeRepository.h"
 #include "validator/MeasurementValidator.h"
 #include "core/State.h"
@@ -162,15 +163,14 @@ void MainWindow::onStartMeasurementClicked() {
 
     updateResultTable(records);
 
+    CsvWriter writer;
 
-    //--------------------------------------------------------
-    // CSV保存
-    //--------------------------------------------------------
-
-     //CsvWriter writer;
-     //writer.write(records);
-
-    if (checkError()) {
+    if (!writer.write(records))
+    {
+        //ログに以下を残す
+        //writer.errorString()
+        m_errorType = ErrorType::CsvError;
+        checkError();
         return;
     }
 
@@ -181,6 +181,7 @@ void MainWindow::onStartMeasurementClicked() {
 void MainWindow::onResetClicked() {
     // リセット
     clearMeasurementResult();
+    m_errorType = ErrorType::None;
     m_stateMachine.setState(State::IDLE);
     updateUiByState();
 }
@@ -356,7 +357,7 @@ QVector<MeasurementRecord> MainWindow::createMeasurementRecords(
     const MeasurementInfo& info,
     const Recipe& recipe,
     const QVector<MeasurementResult>& results,
-    const QDateTime& measurementTime,
+    const QDateTime& dateTime,
     const double& totalAverage
 ) {
     QVector<MeasurementRecord> records;
@@ -366,7 +367,7 @@ QVector<MeasurementRecord> MainWindow::createMeasurementRecords(
     {
         MeasurementRecord record;
 
-        record.measurementTime = measurementTime;
+        record.dateTime = dateTime;
 
         record.deviceName = info.equipmentNo;
         record.waferId = info.waferId;
