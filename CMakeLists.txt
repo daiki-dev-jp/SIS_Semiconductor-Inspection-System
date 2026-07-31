@@ -49,6 +49,8 @@ qt_add_executable(${PROJECT_NAME}
 
     src/validator/MeasurementValidator.h
     src/validator/MeasurementValidator.cpp
+    src/validator/RecipeValidator.h
+    src/validator/RecipeValidator.cpp
 
     src/widgets/StatusLamp.cpp
     src/widgets/StatusLamp.h

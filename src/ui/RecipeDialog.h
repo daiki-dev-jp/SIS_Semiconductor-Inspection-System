@@ -40,7 +40,6 @@ private:
     // Private Methods
     void displayRecipe(const Recipe& recipe);
     Recipe createRecipeFromUi();
-    bool validateRecipe(const Recipe& recipe);
     bool saveRecipeData(Recipe& recipe);
     LogWriter m_logger;
 

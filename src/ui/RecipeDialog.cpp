@@ -2,6 +2,7 @@
 #include "ui_RecipeDialog.h"
 #include "model/Recipe.h"
 #include "repository/RecipeRepository.h"
+#include "validator/RecipeValidator.h"
 
 #include <QMessageBox>
 #include <QUuid>
@@ -105,8 +106,14 @@ void RecipeDialog::onSaveClicked() {
     m_logger.write(LogLevel::Info, "「保存」ボタンを押下しました。", Q_FUNC_INFO);
     Recipe recipe = createRecipeFromUi();
 
-    if (!validateRecipe(recipe)) {
-        return;
+    QString error;
+    if (!RecipeValidator::validate(recipe,m_existingRecipes,m_originalRecipe, error))
+    {
+        m_logger.write(LogLevel::Warning, error, Q_FUNC_INFO);
+        QMessageBox::warning(this,
+            "入力エラー",
+            error);
+        return ;
     }
 
     if (!saveRecipeData(recipe)) {
@@ -171,65 +178,6 @@ Recipe RecipeDialog::createRecipeFromUi() {
     recipe.lowerLimit = ui->lowerLimitDoubleSpinBox->value();
     recipe.comment = ui->commentLineEdit->text();
     return recipe;
-}
-
-//バリデーションチェック
-bool RecipeDialog::validateRecipe(const Recipe& recipe) {
-    //必須チェック
-    if (recipe.recipeName.trimmed().isEmpty()) {
-        m_logger.write(LogLevel::Warning, "レシピ名は必須項目です。", Q_FUNC_INFO);
-
-        QMessageBox::warning(
-            this,
-            "エラー",
-            "レシピ名は必須項目です。");
-        return false;
-    }
-
-    if (recipe.partNumber.trimmed().isEmpty()) {
-        m_logger.write(LogLevel::Warning, "品番は必須項目です。", Q_FUNC_INFO);
-
-        QMessageBox::warning(
-            this,
-            "エラー",
-            "品番は必須項目です。");
-        return false;
-    }
-
-    //重複チェック
-    for (const Recipe& recipeTemp : m_existingRecipes) {
-        //名前が違うなら次へ
-        if (recipeTemp.recipeName.trimmed() != recipe.recipeName.trimmed()) {
-            continue;
-        }
-
-        //編集中の自分自身なら重複ではない
-        if (!m_originalRecipe.isEmpty() &&
-            recipeTemp.id == m_originalRecipe.id) {
-            continue;
-        }
-        m_logger.write(LogLevel::Warning, "同じレシピ名が既に存在します。", Q_FUNC_INFO);
-
-        QMessageBox::warning(
-            this,
-            "エラー",
-            "同じレシピ名が既に存在します。");
-        return false;
-    }
- 
-    //上下限チェック
-    if (recipe.upperLimit < recipe.lowerLimit) {
-        m_logger.write(LogLevel::Warning, "上限値は下限値以上にしてください。", Q_FUNC_INFO);
-
-        QMessageBox::warning(
-            this,
-            "エラー",
-            "上限値は下限値以上にしてください。"
-        );
-        return false;
-    }
-
-    return true;
 }
 
 bool RecipeDialog::saveRecipeData(Recipe& recipe) {

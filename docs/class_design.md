@@ -20,6 +20,7 @@
 | PlcController        | PLC との通信を模擬し、測定開始・完了などのイベントを通知する |
 | RecipeDialog         | レシピ画面の表示、ユーザー操作の受付                         |
 | RecipeRepository     | レシピデータの保存・更新・削除・読込                         |
+| RecipeValidator      | 保存前の入力内容を検証する                                   |
 | Recipe               | レシピ情報を保持するモデル                                   |
 | CsvWriter            | 測定結果の CSV 出力                                          |
 | ErrorType            | エラーの種類を表す列挙型                                     |
@@ -52,6 +53,7 @@ class StateMachine
 class PlcController
 class RecipeDialog
 class RecipeRepository
+class RecipeValidator
 class Recipe
 class CsvWriter
 class ErrorType
@@ -77,9 +79,12 @@ PlcController --> MeasurementResult
 CsvWriter --> MeasurementRecord
 
 RecipeDialog --> RecipeRepository
+RecipeDialog --> RecipeValidator
 RecipeDialog --> LogLevel
 
 RecipeRepository --> Recipe
+
+RecipeValidator --> Recipe
 
 StateMachine --> State
 
