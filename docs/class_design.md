@@ -66,6 +66,8 @@ MainWindow --> StateMachine
 MainWindow --> PlcController
 MainWindow --> RecipeDialog
 MainWindow --> ErrorType
+MainWindow --> CsvWriter
+MainWindow --> MeasurementRecord
 MainWindow --> LogLevel
 MainWindow --> LogWriter
 MainWindow --> StatusLamp
