@@ -46,6 +46,54 @@ QString RecipeDialog::savedRecipeId() const {
 
 
 //=============================================================================
+// Slots
+//=============================================================================
+
+void RecipeDialog::onSaveClicked() {
+    m_logger.write(LogLevel::Info, "「保存」ボタンを押下しました。", Q_FUNC_INFO);
+    Recipe recipe = createRecipeFromUi();
+
+    QString error;
+    if (!RecipeValidator::validate(recipe, m_existingRecipes, m_originalRecipe, error))
+    {
+        m_logger.write(LogLevel::Warning, error, Q_FUNC_INFO);
+        QMessageBox::warning(this,
+            "入力エラー",
+            error);
+        return;
+    }
+
+    if (!saveRecipeData(recipe)) {
+        m_logger.write(LogLevel::Error, "保存に失敗しました。", Q_FUNC_INFO);
+        return;
+    }
+
+    m_logger.write(LogLevel::Info, "レシピを保存しました。", Q_FUNC_INFO);
+
+    accept();
+}
+
+void RecipeDialog::onCloseClicked() {
+    m_logger.write(LogLevel::Info, "「閉じる」ボタンを押下しました。", Q_FUNC_INFO);
+    reject();
+}
+
+void RecipeDialog::onDeleteClicked() {
+    m_logger.write(LogLevel::Info, "「削除」ボタンを押下しました。", Q_FUNC_INFO);
+    RecipeRepository repository;
+    if (!repository.remove(m_originalRecipe.id)) {
+        m_logger.write(LogLevel::Error, "レシピの削除に失敗しました。", Q_FUNC_INFO);
+        QMessageBox::warning(
+            this,
+            "削除エラー",
+            "レシピを削除できませんでした。");
+        return;
+    }
+    m_logger.write(LogLevel::Info, "レシピの削除をしました。", Q_FUNC_INFO);
+    accept();
+}
+
+//=============================================================================
 // Initialization
 //=============================================================================
 
@@ -95,55 +143,6 @@ void RecipeDialog::initializeWaferTypeButtons() {
     waferTypeGroup->addButton(ui->swRadioButton, 3);
 
     ui->pwRadioButton->setChecked(true);
-}
-
-//=============================================================================
-// Slots
-//=============================================================================
-
-
-void RecipeDialog::onSaveClicked() {
-    m_logger.write(LogLevel::Info, "「保存」ボタンを押下しました。", Q_FUNC_INFO);
-    Recipe recipe = createRecipeFromUi();
-
-    QString error;
-    if (!RecipeValidator::validate(recipe,m_existingRecipes,m_originalRecipe, error))
-    {
-        m_logger.write(LogLevel::Warning, error, Q_FUNC_INFO);
-        QMessageBox::warning(this,
-            "入力エラー",
-            error);
-        return ;
-    }
-
-    if (!saveRecipeData(recipe)) {
-        m_logger.write(LogLevel::Error, "保存に失敗しました。", Q_FUNC_INFO);
-        return;
-    }
-
-    m_logger.write(LogLevel::Info, "レシピを保存しました。", Q_FUNC_INFO);
-
-    accept();
-}
-
-void RecipeDialog::onCloseClicked() {   
-    m_logger.write(LogLevel::Info, "「閉じる」ボタンを押下しました。", Q_FUNC_INFO);
-    reject();
-}
-
-void RecipeDialog::onDeleteClicked() {
-    m_logger.write(LogLevel::Info, "「削除」ボタンを押下しました。", Q_FUNC_INFO);
-    RecipeRepository repository;
-    if (!repository.remove(m_originalRecipe.id)) {
-        m_logger.write(LogLevel::Error, "レシピの削除に失敗しました。", Q_FUNC_INFO);
-        QMessageBox::warning(
-            this,
-            "削除エラー",
-            "レシピを削除できませんでした。");
-        return;
-    }
-    m_logger.write(LogLevel::Info, "レシピの削除をしました。", Q_FUNC_INFO);
-    accept();
 }
 
 //=============================================================================

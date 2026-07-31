@@ -26,16 +26,16 @@ public:
     QString savedRecipeId() const;
 
 private:
+    // Slots
+    void onSaveClicked();
+    void onCloseClicked();
+    void onDeleteClicked();
+
     // Initialization
     void initializeUi();
     void setupConnections();
     void initializeState();
     void initializeWaferTypeButtons();
-
-    // Slots
-    void onSaveClicked();
-    void onCloseClicked();
-    void onDeleteClicked();
 
     // Private Methods
     void displayRecipe(const Recipe& recipe);

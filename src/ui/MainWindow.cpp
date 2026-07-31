@@ -59,82 +59,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
 }
 
 //=============================================================================
-// Initialization
-//=============================================================================
-
-
-void MainWindow::initializeUi()
-{
-    // 初期表示設定
-    ui->sendInfoPushButton->setEnabled(true);
-    ui->resultTableWidget->setFocusPolicy(Qt::NoFocus);
-    ui->errorPlainTextEdit->setFocusPolicy(Qt::NoFocus);
-
-    ui->resultTableWidget->setColumnWidth(0, 120); // 測定位置
-    ui->resultTableWidget->setColumnWidth(1, 120); // 平均膜厚
-    ui->resultTableWidget->setColumnWidth(2, 80);  // 判定
-    ui->resultTableWidget->setAlternatingRowColors(true);
-    ui->resultTableWidget->setStyleSheet(
-        "QTableWidget {"
-        "    alternate-background-color: rgb(240,240,240);"
-        "    background-color: white;"
-        "}");
-
-    loadRecipes();
-
-    updateRecipeInfo();
-}
-
-void MainWindow::setupConnections()
-{
-    //システム
-    connect(ui->sendInfoPushButton,
-        &QPushButton::clicked,
-        this,
-        &MainWindow::onSendInfoClicked
-    );
-
-    connect(ui->startMeasurementPushButton,
-        &QPushButton::clicked,
-        this,
-        &MainWindow::onStartMeasurementClicked
-    );
-
-    connect(ui->resetPushButton,
-        &QPushButton::clicked,
-        this,
-        &MainWindow::onResetClicked
-    );
-
-    //レシピ
-    connect(ui->addRecipeButton,
-        &QPushButton::clicked,
-        this,
-        &MainWindow::onAddRecipeClicked
-    );
-
-    connect(ui->editRecipeButton,
-        &QPushButton::clicked,
-        this,
-        &MainWindow::onEditRecipeClicked
-    );
-
-    connect(ui->recipeComboBox,
-        QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this,
-        &MainWindow::onRecipeChanged
-    );
-}
-
-void MainWindow::initializeState()
-{
-    // 初期状態
-    m_stateMachine.setState(State::IDLE);
-    updateUiByState();
-    m_logger.write(LogLevel::Info, "状態を IDLE に遷移しました。", Q_FUNC_INFO);
-}
-
-//=============================================================================
 // Slots
 //=============================================================================
 
@@ -168,27 +92,27 @@ void MainWindow::onStartMeasurementClicked() {
 
     m_logger.write(LogLevel::Info, "データの取得を開始しました。", Q_FUNC_INFO);
     QVector<MeasurementResult> results;
-        
-    if(!m_plcController.receiveMeasurementResults(recipe.lineCount, results)) {
+
+    if (!m_plcController.receiveMeasurementResults(recipe.lineCount, results)) {
         m_logger.write(LogLevel::Error, "PLCからのデータ取得に失敗しました。", Q_FUNC_INFO);
         m_errorType = ErrorType::MeasurementError;
         checkError();
         return;
-	}
+    }
     else {
-		m_logger.write(LogLevel::Info, "PLCからのデータ取得に成功しました。", Q_FUNC_INFO);
+        m_logger.write(LogLevel::Info, "PLCからのデータ取得に成功しました。", Q_FUNC_INFO);
     }
 
     double totalAverage = calculateTotalAverage(results);
 
-    QVector<MeasurementRecord> records 
+    QVector<MeasurementRecord> records
         = createMeasurementRecords(
             info,
             recipe,
             results,
             QDateTime::currentDateTime(),
             totalAverage
-            );
+        );
 
     updateResultTable(records);
 
@@ -261,10 +185,85 @@ void MainWindow::onRecipeChanged(int /*index*/) {
     updateRecipeInfo();
 
     m_logger.write(
-        LogLevel::Info, 
+        LogLevel::Info,
         QString("レシピ「%1」を選択しました。")
         .arg(ui->recipeComboBox->currentText()),
         Q_FUNC_INFO);
+}
+
+//=============================================================================
+// Initialization
+//=============================================================================
+
+void MainWindow::initializeUi()
+{
+    // 初期表示設定
+    ui->sendInfoPushButton->setEnabled(true);
+    ui->resultTableWidget->setFocusPolicy(Qt::NoFocus);
+    ui->errorPlainTextEdit->setFocusPolicy(Qt::NoFocus);
+
+    ui->resultTableWidget->setColumnWidth(0, 120); // 測定位置
+    ui->resultTableWidget->setColumnWidth(1, 120); // 平均膜厚
+    ui->resultTableWidget->setColumnWidth(2, 80);  // 判定
+    ui->resultTableWidget->setAlternatingRowColors(true);
+    ui->resultTableWidget->setStyleSheet(
+        "QTableWidget {"
+        "    alternate-background-color: rgb(240,240,240);"
+        "    background-color: white;"
+        "}");
+
+    loadRecipes();
+
+    updateRecipeInfo();
+}
+
+void MainWindow::setupConnections()
+{
+    //システム
+    connect(ui->sendInfoPushButton,
+        &QPushButton::clicked,
+        this,
+        &MainWindow::onSendInfoClicked
+    );
+
+    connect(ui->startMeasurementPushButton,
+        &QPushButton::clicked,
+        this,
+        &MainWindow::onStartMeasurementClicked
+    );
+
+    connect(ui->resetPushButton,
+        &QPushButton::clicked,
+        this,
+        &MainWindow::onResetClicked
+    );
+
+    //レシピ
+    connect(ui->addRecipeButton,
+        &QPushButton::clicked,
+        this,
+        &MainWindow::onAddRecipeClicked
+    );
+
+    connect(ui->editRecipeButton,
+        &QPushButton::clicked,
+        this,
+        &MainWindow::onEditRecipeClicked
+    );
+
+    connect(ui->recipeComboBox,
+        QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this,
+        &MainWindow::onRecipeChanged
+    );
+}
+
+void MainWindow::initializeState()
+{
+    // 初期状態
+    m_stateMachine.setState(State::IDLE);
+    updateUiByState();
+    m_logger.write(LogLevel::Info, "状態を IDLE に遷移しました。", Q_FUNC_INFO);
 }
 
 //=============================================================================

@@ -29,11 +29,6 @@ protected:
     void closeEvent(QCloseEvent* event) override;
 
 private:
-    // Initialization
-    void initializeUi();
-    void setupConnections();
-    void initializeState();
-
     // Slots
     void onSendInfoClicked();
     void onStartMeasurementClicked();
@@ -41,6 +36,11 @@ private:
     void onAddRecipeClicked();
     void onEditRecipeClicked();
     void onRecipeChanged(int index);
+
+    // Initialization
+    void initializeUi();
+    void setupConnections();
+    void initializeState();
 
     // Private Methods
     void loadRecipes();
