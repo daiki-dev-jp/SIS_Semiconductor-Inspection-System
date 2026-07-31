@@ -4,6 +4,10 @@
 #include <QTextStream>
 #include <QDir>
 
+//=============================================================================
+// Public Methods
+//=============================================================================
+
 bool CsvWriter::write(const QVector<MeasurementRecord>& records)
 {
     m_errorString.clear();

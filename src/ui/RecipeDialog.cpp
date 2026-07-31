@@ -102,6 +102,7 @@ void RecipeDialog::initializeWaferTypeButtons() {
 
 
 void RecipeDialog::onSaveClicked() {
+    m_logger.write(LogLevel::Info, "「保存」ボタンを押下しました。", Q_FUNC_INFO);
     Recipe recipe = createRecipeFromUi();
 
     if (!validateRecipe(recipe)) {
@@ -109,26 +110,32 @@ void RecipeDialog::onSaveClicked() {
     }
 
     if (!saveRecipeData(recipe)) {
+        m_logger.write(LogLevel::Error, "保存に失敗しました。", Q_FUNC_INFO);
         return;
     }
-    
+
+    m_logger.write(LogLevel::Info, "レシピを保存しました。", Q_FUNC_INFO);
+
     accept();
 }
 
-void RecipeDialog::onCloseClicked() {    
+void RecipeDialog::onCloseClicked() {   
+    m_logger.write(LogLevel::Info, "「閉じる」ボタンを押下しました。", Q_FUNC_INFO);
     reject();
 }
 
 void RecipeDialog::onDeleteClicked() {
+    m_logger.write(LogLevel::Info, "「削除」ボタンを押下しました。", Q_FUNC_INFO);
     RecipeRepository repository;
     if (!repository.remove(m_originalRecipe.id)) {
+        m_logger.write(LogLevel::Error, "レシピの削除に失敗しました。", Q_FUNC_INFO);
         QMessageBox::warning(
             this,
             "削除エラー",
             "レシピを削除できませんでした。");
         return;
     }
-
+    m_logger.write(LogLevel::Info, "レシピの削除をしました。", Q_FUNC_INFO);
     accept();
 }
 
@@ -170,6 +177,8 @@ Recipe RecipeDialog::createRecipeFromUi() {
 bool RecipeDialog::validateRecipe(const Recipe& recipe) {
     //必須チェック
     if (recipe.recipeName.trimmed().isEmpty()) {
+        m_logger.write(LogLevel::Warning, "レシピ名は必須項目です。", Q_FUNC_INFO);
+
         QMessageBox::warning(
             this,
             "エラー",
@@ -178,6 +187,8 @@ bool RecipeDialog::validateRecipe(const Recipe& recipe) {
     }
 
     if (recipe.partNumber.trimmed().isEmpty()) {
+        m_logger.write(LogLevel::Warning, "品番は必須項目です。", Q_FUNC_INFO);
+
         QMessageBox::warning(
             this,
             "エラー",
@@ -197,6 +208,7 @@ bool RecipeDialog::validateRecipe(const Recipe& recipe) {
             recipeTemp.id == m_originalRecipe.id) {
             continue;
         }
+        m_logger.write(LogLevel::Warning, "同じレシピ名が既に存在します。", Q_FUNC_INFO);
 
         QMessageBox::warning(
             this,
@@ -207,6 +219,8 @@ bool RecipeDialog::validateRecipe(const Recipe& recipe) {
  
     //上下限チェック
     if (recipe.upperLimit < recipe.lowerLimit) {
+        m_logger.write(LogLevel::Warning, "上限値は下限値以上にしてください。", Q_FUNC_INFO);
+
         QMessageBox::warning(
             this,
             "エラー",

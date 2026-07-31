@@ -22,8 +22,10 @@
 | RecipeRepository     | レシピデータの保存・更新・削除・読込                         |
 | Recipe               | レシピ情報を保持するモデル                                   |
 | CsvWriter            | 測定結果の CSV 出力                                          |
+| ErrorType            | エラーの種類を表す列挙型                                     |
 | MeasurementRecord    | 1 レコード分のデータを保持するモデル                         |
-| Logger               | アプリケーションログを記録する                               |
+| LogLevel             | ログの重要度を表す列挙型                                     |
+| LogWriter            | アプリケーションログを記録する                               |
 | StatusLamp           | 装置状態を表示するカスタムウィジェット                       |
 
 ### web アプリ
@@ -52,8 +54,10 @@ class RecipeDialog
 class RecipeRepository
 class Recipe
 class CsvWriter
+class ErrorType
 class MeasurementRecord
-class Logger
+class LogWriter
+class LogLevel
 class StatusLamp
 
 MainWindow --> MeasurementInfo
@@ -61,22 +65,25 @@ MainWindow --> MeasurementValidator
 MainWindow --> StateMachine
 MainWindow --> PlcController
 MainWindow --> RecipeDialog
+MainWindow --> ErrorType
+MainWindow --> LogLevel
+MainWindow --> LogWriter
 MainWindow --> StatusLamp
 
 PlcController --> MeasurementResult
 
 CsvWriter --> MeasurementRecord
-CsvWriter --> MeasurementResult
 
 RecipeDialog --> RecipeRepository
+RecipeDialog --> LogLevel
+
 RecipeRepository --> Recipe
 
 StateMachine --> State
 
-MainWindow ..> Logger
-PlcController ..> Logger
-RecipeRepository ..> Logger
-CsvWriter ..> Logger
+RecipeRepository --> LogWriter
+
+LogWriter--> LogLevel
 ```
 
 ### web アプリ

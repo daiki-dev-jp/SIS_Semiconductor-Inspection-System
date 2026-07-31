@@ -6,6 +6,7 @@
 #include "repository/CsvWriter.h"
 #include "repository/RecipeRepository.h"
 #include "validator/MeasurementValidator.h"
+#include "core/LogLevel.h"
 #include "core/State.h"
 #include "core/StateMachine.h"
 #include "model/MeasurementResult.h"
@@ -26,6 +27,35 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+//=============================================================================
+// Protected Methods
+//=============================================================================
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    QMessageBox::StandardButton result =
+        QMessageBox::question(
+            this,
+            "終了確認",
+            "アプリケーションを終了しますか？",
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+
+    if (result == QMessageBox::Yes)
+    {
+        m_logger.write(
+            LogLevel::Info,
+            "アプリケーションを終了しました。",
+            Q_FUNC_INFO);
+
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
 }
 
 //=============================================================================
@@ -101,6 +131,7 @@ void MainWindow::initializeState()
     // 初期状態
     m_stateMachine.setState(State::IDLE);
     updateUiByState();
+    m_logger.write(LogLevel::Info, "状態を IDLE に遷移しました。", Q_FUNC_INFO);
 }
 
 //=============================================================================
@@ -108,50 +139,48 @@ void MainWindow::initializeState()
 //=============================================================================
 
 void MainWindow::onSendInfoClicked() {
-    MeasurementInfo info = createMeasurementInfoFromUi();
+    m_logger.write(LogLevel::Info, "「情報送信」ボタンを押下しました。", Q_FUNC_INFO);
 
-    QString error;
-
-    if (!MeasurementValidator::validate(info, error))
-    {
-        QMessageBox::warning(this,
-            "入力エラー",
-            error);
-        return;
-    }
-
-    //PLCへ情報送信（シミュレーション）
-    if (!m_plcController.sendMeasurementInfo(info)) {
-        QMessageBox::warning(this,
-            "通信エラー",
-            "PLCとの通信に失敗しました。");
+    if (!sendMeasurementInfo()) {
         return;
     }
 
     // 情報送信
     m_stateMachine.setState(State::READY);
     updateUiByState();
+    m_logger.write(LogLevel::Info, "状態を READY に遷移しました。", Q_FUNC_INFO);
 }
 
 void MainWindow::onStartMeasurementClicked() {
-    // 測定開始
-    m_stateMachine.setState(State::START);
-    updateUiByState();
+    m_logger.write(LogLevel::Info, "「測定開始」ボタンを押下しました。", Q_FUNC_INFO);
+
+    if (!sendMeasurementInfo()) {
+        return;
+    }
 
     MeasurementInfo info = createMeasurementInfoFromUi();
 
     Recipe recipe = m_recipes[ui->recipeComboBox->currentIndex()];
 
-    QVector<MeasurementResult> results =
-        receiveMeasurementResults(recipe.lineCount);
+    m_stateMachine.setState(State::START);
+    updateUiByState();
+    m_logger.write(LogLevel::Info, "状態を START に遷移しました。", Q_FUNC_INFO);
 
-    if (checkError()) {
+    m_logger.write(LogLevel::Info, "データの取得を開始しました。", Q_FUNC_INFO);
+    QVector<MeasurementResult> results;
+        
+    if(!m_plcController.receiveMeasurementResults(recipe.lineCount, results)) {
+        m_logger.write(LogLevel::Error, "PLCからのデータ取得に失敗しました。", Q_FUNC_INFO);
+        m_errorType = ErrorType::MeasurementError;
+        checkError();
         return;
+	}
+    else {
+		m_logger.write(LogLevel::Info, "PLCからのデータ取得に成功しました。", Q_FUNC_INFO);
     }
 
     double totalAverage = calculateTotalAverage(results);
 
-    // TODO://CSV出力でも利用
     QVector<MeasurementRecord> records 
         = createMeasurementRecords(
             info,
@@ -167,26 +196,31 @@ void MainWindow::onStartMeasurementClicked() {
 
     if (!writer.write(records))
     {
-        //ログに以下を残す
-        //writer.errorString()
+        m_logger.write(LogLevel::Error, "CSVの保存に失敗しました。", Q_FUNC_INFO);
         m_errorType = ErrorType::CsvError;
         checkError();
         return;
     }
+    else {
+        m_logger.write(LogLevel::Info, "CSVの保存に成功しました。", Q_FUNC_INFO);
+    }
 
     m_stateMachine.setState(State::COMPLETE);
     updateUiByState();
+    m_logger.write(LogLevel::Info, "状態を COMPLETE に遷移しました。", Q_FUNC_INFO);
 }
 
 void MainWindow::onResetClicked() {
-    // リセット
+    m_logger.write(LogLevel::Info, "「リセット」ボタンを押下しました。", Q_FUNC_INFO);
     clearMeasurementResult();
     m_errorType = ErrorType::None;
     m_stateMachine.setState(State::IDLE);
     updateUiByState();
+    m_logger.write(LogLevel::Info, "状態を IDLE に遷移しました。", Q_FUNC_INFO);
 }
 
 void MainWindow::onAddRecipeClicked() {
+    m_logger.write(LogLevel::Info, "「レシピ追加」ボタンを押下しました。", Q_FUNC_INFO);
     RecipeDialog dialog(this);
     dialog.setExistingRecipes(m_recipes);
 
@@ -201,6 +235,7 @@ void MainWindow::onAddRecipeClicked() {
 }
 
 void MainWindow::onEditRecipeClicked() {
+    m_logger.write(LogLevel::Info, "「レシピ編集」ボタンを押下しました。", Q_FUNC_INFO);
     int index = ui->recipeComboBox->currentIndex();
 
     if (index < 0 || index >= m_recipes.size()) {
@@ -224,6 +259,12 @@ void MainWindow::onEditRecipeClicked() {
 
 void MainWindow::onRecipeChanged(int /*index*/) {
     updateRecipeInfo();
+
+    m_logger.write(
+        LogLevel::Info, 
+        QString("レシピ「%1」を選択しました。")
+        .arg(ui->recipeComboBox->currentText()),
+        Q_FUNC_INFO);
 }
 
 //=============================================================================
@@ -283,7 +324,7 @@ void MainWindow::updateUiByState()
 
     case State::READY:
 
-        ui->sendInfoPushButton->setEnabled(false);
+        ui->sendInfoPushButton->setEnabled(true);
         ui->startMeasurementPushButton->setEnabled(true);
         ui->resetPushButton->setEnabled(false);
 
@@ -315,6 +356,34 @@ void MainWindow::clearMeasurementResult() {
     ui->errorPlainTextEdit->clear();
 }
 
+bool MainWindow::sendMeasurementInfo() {
+    MeasurementInfo info = createMeasurementInfoFromUi();
+    QString error;
+    if (!MeasurementValidator::validate(info, error))
+    {
+        m_logger.write(LogLevel::Warning, error, Q_FUNC_INFO);
+        QMessageBox::warning(this,
+            "入力エラー",
+            error);
+        return false;
+    }
+
+    m_logger.write(LogLevel::Info, "PLCへ情報の送信を開始しました。", Q_FUNC_INFO);
+
+    //PLCへ情報送信（シミュレーション）
+    if (!m_plcController.sendMeasurementInfo(info)) {
+        m_logger.write(LogLevel::Error, "PLCへ情報の送信が失敗しました。", Q_FUNC_INFO);
+		m_errorType = ErrorType::PlcError;
+		checkError();
+        return false;
+    }
+    else {
+        m_logger.write(LogLevel::Info, "PLCへ情報の送信が成功しました。", Q_FUNC_INFO);
+    }
+
+    return true;
+}
+
 MeasurementInfo MainWindow::createMeasurementInfoFromUi() const {
     MeasurementInfo info;
 
@@ -325,19 +394,6 @@ MeasurementInfo MainWindow::createMeasurementInfoFromUi() const {
     info.recipe = ui->recipeComboBox->currentText();
     
     return info;
-}
-
-// PLCから測定結果取得
-QVector<MeasurementResult> MainWindow::receiveMeasurementResults(int lineCount) {
-    QVector<MeasurementResult> results;
-
-    for (int lineNo = 0; lineNo < lineCount; ++lineNo)
-    {
-        results.append(
-            m_plcController.receiveMeasurementResult());
-    }
-
-    return results;
 }
 
 // 全体平均膜厚計算
@@ -459,24 +515,32 @@ bool MainWindow::checkError()
 {
     if (m_errorType == ErrorType::None)
         return false;
+	QString errorMessage;
 
     switch (m_errorType)
     {
     case ErrorType::PlcError:
-        ui->errorPlainTextEdit->setPlainText("PLC通信エラー");
+        errorMessage = "PLC通信エラー";
+        ui->errorPlainTextEdit->setPlainText(errorMessage);
         break;
 
     case ErrorType::CsvError:
-        ui->errorPlainTextEdit->setPlainText("CSV保存エラー");
+        errorMessage = "CSV保存エラー";
+        ui->errorPlainTextEdit->setPlainText(errorMessage);
         break;
 
     case ErrorType::MeasurementError:
-        ui->errorPlainTextEdit->setPlainText("測定エラー");
+        errorMessage = "測定エラー";
+        ui->errorPlainTextEdit->setPlainText(errorMessage);
         break;
     }
 
     m_stateMachine.setState(State::ERROR);
     updateUiByState();
+    QMessageBox::warning(this,
+        "エラー",
+        errorMessage);
 
+    m_logger.write(LogLevel::Info, "状態を ERROR に遷移しました。", Q_FUNC_INFO);
     return true;
 }

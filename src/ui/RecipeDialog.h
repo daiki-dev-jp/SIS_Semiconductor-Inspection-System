@@ -4,6 +4,7 @@
 #include <QButtonGroup>
 
 #include "model/Recipe.h"
+#include "repository/LogWriter.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,6 +42,7 @@ private:
     Recipe createRecipeFromUi();
     bool validateRecipe(const Recipe& recipe);
     bool saveRecipeData(Recipe& recipe);
+    LogWriter m_logger;
 
 private:
     // UI

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <QCloseEvent>
 #include <QtWidgets/QMainWindow>
 
 #include "model/Recipe.h"
@@ -7,6 +8,7 @@
 #include "model/MeasurementRecord.h"
 #include "core/ErrorType.h"
 #include "core/StateMachine.h"
+#include "repository/LogWriter.h"
 #include "controller/PlcController.h"
 
 QT_BEGIN_NAMESPACE
@@ -22,6 +24,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+protected:
+    void closeEvent(QCloseEvent* event) override;
 
 private:
     // Initialization
@@ -44,6 +49,7 @@ private:
     void updateUiByState();
     void clearMeasurementResult();
     MeasurementInfo createMeasurementInfoFromUi() const;
+    bool sendMeasurementInfo();
     StateMachine m_stateMachine;
     PlcController m_plcController;
 
@@ -60,6 +66,7 @@ private:
     void updateResultTable(const QVector<MeasurementRecord>& records);
     ErrorType m_errorType = ErrorType::None;
     bool checkError();
+    LogWriter m_logger;
 
 private:
     Ui::MainWindowClass*ui;

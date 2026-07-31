@@ -22,6 +22,7 @@ qt_add_executable(${PROJECT_NAME}
     src/controller/PlcController.cpp
 
     src/core/ErrorType.h
+    src/core/LogLevel.h
     src/core/State.h
     src/core/StateMachine.h
     src/core/StateMachine.cpp
@@ -34,6 +35,8 @@ qt_add_executable(${PROJECT_NAME}
 
     src/repository/CsvWriter.h
     src/repository/CsvWriter.cpp
+    src/repository/LogWriter.h
+    src/repository/LogWriter.cpp
     src/repository/RecipeRepository.cpp
     src/repository/RecipeRepository.h
 
